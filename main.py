@@ -176,6 +176,42 @@ def create_class(message):
     # Send a message to the user
     bot.send_message(telegram_user_id, 'The class ' + class_name + ' has been created with the class code ' + class_code + ' You are the teacher of this class. Share this class code with your students so they can join your class.')
 
+def create_berriai_app(url_for_transcript):
+  """
+  return the api_endpoint that is created after the ingestion of the document provided
+  """
+  berri_ai_url = "https://api.berri.ai/create_app"
+  data = {
+    "user_email": "varuntheja.atp@gmail.com",
+    'data_source':
+    json.dumps([url_for_transcript])
+  }
+  # TODO: need to add prompt
+
+  response = requests.post(berri_ai_url, data=data)
+  print(response.json())
+  return response.json()['instance_id']
+
+def query_berriai_api_for_question(instance_id):
+  url = "https://api.berri.ai/query"
+  query = """
+  Say you are a teacher who is an expert on the book provided. Can you generate one multiple choice question to test the understanding of a student. The multiple choice question should have 4 choices and have one correct answer. Also let me know what is the correct answer for this question. Output your response in a Json format using key words: "question", "choice A", "choice B", "choice C", "choice D", "correct choice"
+  """
+
+  params = {
+    "user_email": "varuntheja.atp@gmail.com",
+    "instance_id": instance_id,
+    "query": query,
+    "model": "gpt-3.5-turbo"
+  }
+
+  response = requests.get(url, params=params)
+
+  json_string = response.json()['response']
+  print(json_string)
+  # json.loads(json_string) # need a json format to better format the response in the reply of the chatbot
+  # This is another TODO
+  return json_string
 
 # Function to upload a transcript of a lecture
 # Format: /upload_transcript <class_code> <lesson_transcript>
@@ -183,6 +219,7 @@ def create_class(message):
 def upload_transcript(message):
     # Get the user id
     pass
+    # create_berriai_app - needs to be used here
 
 # Run the main function
 if __name__ == '__main__':
