@@ -1,2 +1,2 @@
 # TELL
-Post-Lecture personalized teacher 
+Personalized Post-Lecture tutor
